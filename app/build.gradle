@@ -1,0 +1,102 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
+    id 'dagger.hilt.android.plugin'
+    id 'androidx.navigation.safeargs.kotlin'
+}
+
+android {
+    namespace 'com.plinqdevelopers.weatherapp'
+    compileSdk 33
+
+    buildFeatures {
+        viewBinding = true
+    }
+
+    defaultConfig {
+        applicationId "com.plinqdevelopers.weatherapp"
+        minSdk 26
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+
+    def kotlin = "1.8.0"
+    implementation "androidx.core:core-ktx:$kotlin"
+
+    def appCompat = "1.6.1"
+    implementation "androidx.appcompat:appcompat:$appCompat"
+
+    def googleMaterial = "1.8.0"
+    implementation "com.google.android.material:material:$googleMaterial"
+
+    def constraintLayout = "2.1.4"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintLayout"
+
+    def navigationFragment = "2.5.3"
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigationFragment"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigationFragment"
+
+    def junitTest = "4.13.2"
+    def junitTestExt = "1.1.5"
+    testImplementation "junit:junit:$junitTest"
+    androidTestImplementation "androidx.test.ext:junit:$junitTestExt"
+
+    def espressoTest = "3.5.1"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoTest"
+
+    def retrofitLibrary = "2.9.0"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitLibrary"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitLibrary"
+
+    def daggerHilt = "2.44"
+    implementation "com.google.dagger:hilt-android:$daggerHilt"
+    kapt "com.google.dagger:hilt-android-compiler:$daggerHilt"
+
+    def lifecycleViewModel = "1.0.0-alpha03"
+    kapt "androidx.hilt:hilt-compiler:$lifecycleViewModel"
+
+    def coilImageLibrary = "2.2.2"
+    implementation "io.coil-kt:coil:$coilImageLibrary"
+
+    def liveData = "2.5.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$liveData"
+
+    def httpLoggingInterceptor = "5.0.0-alpha.3"
+    implementation "com.squareup.okhttp3:logging-interceptor:$httpLoggingInterceptor"
+
+    def jetpackDataStore = "1.0.0"
+    implementation "androidx.datastore:datastore-preferences:$jetpackDataStore"
+
+    def splashScreenApi = "1.0.0"
+    implementation "androidx.core:core-splashscreen:$splashScreenApi"
+
+    def timberLogger = "5.0.1"
+    implementation "com.jakewharton.timber:timber:$timberLogger"
+
+}
+
+kapt {
+    correctErrorTypes true
+}
