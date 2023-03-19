@@ -23,5 +23,6 @@ sealed class WeatherFragmentContract {
     sealed class Event {
         data class GetWeatherForecast(val locationName: String) : Event()
         object ShowSearchView : Event()
+        object CloseSearchView : Event()
     }
 }

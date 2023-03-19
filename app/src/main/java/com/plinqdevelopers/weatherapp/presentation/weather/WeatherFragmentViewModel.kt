@@ -29,6 +29,9 @@ class WeatherFragmentViewModel @Inject constructor(
             is WeatherFragmentContract.Event.ShowSearchView -> {
                 _weatherFragmentState.value = WeatherFragmentContract.State(isSearchViewVisible = true)
             }
+            is WeatherFragmentContract.Event.CloseSearchView -> {
+                _weatherFragmentState.value = WeatherFragmentContract.State(isSearchViewVisible = false)
+            }
         }
     }
 

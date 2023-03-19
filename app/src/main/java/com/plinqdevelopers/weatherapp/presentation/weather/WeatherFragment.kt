@@ -31,11 +31,23 @@ class WeatherFragment : Fragment() {
     }
 
     private fun setupViews() {
-        binding.textView.setOnClickListener {
+        binding.weatherFragmentToolbarContainer.setOnClickListener {
             viewModel.handleEvents(
                 WeatherFragmentContract.Event.GetWeatherForecast(
                     locationName = "",
                 ),
+            )
+        }
+
+        binding.weatherFragmentIvWeatherIcon.setOnClickListener {
+            viewModel.handleEvents(
+                WeatherFragmentContract.Event.ShowSearchView,
+            )
+        }
+
+        binding.weatherFragmentIvCloseSearch.setOnClickListener {
+            viewModel.handleEvents(
+                WeatherFragmentContract.Event.CloseSearchView,
             )
         }
     }
@@ -45,7 +57,7 @@ class WeatherFragment : Fragment() {
             when {
                 state.isLoading -> showLoading()
                 state.errorMessage != null -> showError(state.errorMessage)
-                state.isSearchViewVisible -> showSearchView()
+                state.isSearchViewVisible -> showSearchView(state.isSearchViewVisible)
                 state.data != null -> showWeatherData(state.data)
             }
         }
@@ -57,14 +69,18 @@ class WeatherFragment : Fragment() {
 
     private fun showError(message: String) {
         binding.weatherFragmentPbLoadingData.visibility = View.GONE
-        binding.textView.text = message
     }
 
-    private fun showSearchView() {
+    private fun showSearchView(isSearchVisible: Boolean) {
+        if (isSearchVisible) {
+            binding.weatherFragmentSearchViewContainer.visibility = View.VISIBLE
+        } else {
+            binding.weatherFragmentSearchViewContainer.visibility = View.GONE
+        }
     }
 
     private fun showWeatherData(data: Weather) {
         binding.weatherFragmentPbLoadingData.visibility = View.GONE
-        binding.textView.text = data.placeName
+        binding.weatherFragmentTvPlaceName.text = data.placeName
     }
 }
