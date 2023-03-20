@@ -16,17 +16,17 @@ sealed class WeatherFragmentContract {
 
     // Effects: represents a side effect the fragment can perform
     sealed class Effect {
-        data class ShowToast(val message: String) : Effect()
         data class ShowSnackMessage(val message: String) : Effect()
 
         object ShowSearchView : Effect()
+        object HideSearchView : Effect()
     }
 
     // Events: represents all actions a user can do within the screen
     sealed class Event {
         data class GetWeatherForecast(val locationName: String) : Event()
         data class SearchPlaceQuery(val searchText: String) : Event()
-        object ShowSearchView : Event()
-        object CloseSearchView : Event()
+        object OpenSearchContainer : Event()
+        object CloseSearchContainer : Event()
     }
 }

@@ -9,19 +9,20 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
+import com.google.android.material.snackbar.Snackbar
+import com.plinqdevelopers.weatherapp.R
+import com.plinqdevelopers.weatherapp.core.getCurrentFormattedDate
+import com.plinqdevelopers.weatherapp.core.getCurrentFormattedTime
 import com.plinqdevelopers.weatherapp.databinding.FragmentWeatherBinding
+import com.plinqdevelopers.weatherapp.domain.model.Place
 import com.plinqdevelopers.weatherapp.domain.model.Weather
 import com.plinqdevelopers.weatherapp.presentation.adapters.PlaceListAdapter
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 @AndroidEntryPoint
 class WeatherFragment : Fragment(), PlaceListAdapter.PlaceItemClickListener {
     private lateinit var binding: FragmentWeatherBinding
     private val viewModel: WeatherFragmentViewModel by viewModels()
-    private val localDateTime = LocalDateTime.now()
 
     private val placeListAdapter: PlaceListAdapter = PlaceListAdapter(this)
 
@@ -32,11 +33,8 @@ class WeatherFragment : Fragment(), PlaceListAdapter.PlaceItemClickListener {
     ): View {
         binding = FragmentWeatherBinding.inflate(inflater, container, false)
         observeState()
-        binding.searchViewContainerSuggestionsList.apply {
-            adapter = placeListAdapter
-            layoutManager = LinearLayoutManager(requireContext())
-            hasFixedSize()
-        }
+        observeEffect()
+        setupSearchListView()
         return binding.root
     }
 
@@ -49,8 +47,21 @@ class WeatherFragment : Fragment(), PlaceListAdapter.PlaceItemClickListener {
     private fun setupViews() {
         binding.weatherFragmentSearchButton.setOnClickListener {
             viewModel.handleEvents(
-                WeatherFragmentContract.Event.ShowSearchView,
+                WeatherFragmentContract.Event.OpenSearchContainer,
             )
+        }
+        binding.weatherFragmentBtnCloseSearchWindow.setOnClickListener {
+            viewModel.handleEvents(
+                WeatherFragmentContract.Event.CloseSearchContainer,
+            )
+        }
+    }
+
+    private fun setupSearchListView() {
+        binding.searchViewContainerSuggestionsList.apply {
+            adapter = placeListAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            hasFixedSize()
         }
     }
 
@@ -59,18 +70,30 @@ class WeatherFragment : Fragment(), PlaceListAdapter.PlaceItemClickListener {
             when {
                 state.isLoading -> showLoading()
                 state.errorMessage != null -> showError(state.errorMessage)
-                state.isSearchViewVisible -> showSearchView(state.isSearchViewVisible)
                 state.data != null -> showWeatherData(state.data)
-                state.placesList != null -> {
-                    val placeListData = state.placesList
+                state.placesList != null -> populatePlacesList(state.placesList)
+            }
+        }
+    }
 
-                    if (placeListData.isEmpty()) {
-                        binding.weatherFragmentTvSearchInfo.visibility = View.VISIBLE
-                        binding.weatherFragmentTvSearchInfo.text = "We could not find any matches to your search!"
-                    } else {
-                        placeListAdapter.submitList(state.placesList)
-                        binding.weatherFragmentTvSearchInfo.visibility = View.GONE
-                    }
+    private fun observeEffect() {
+        viewModel.effects.observe(viewLifecycleOwner) { effect ->
+            when (effect) {
+                is WeatherFragmentContract.Effect.ShowSearchView -> {
+                    binding.weatherFragmentSearchViewContainer.visibility = View.VISIBLE
+                }
+                is WeatherFragmentContract.Effect.ShowSnackMessage -> {
+                    val snack = Snackbar.make(
+                        requireView(),
+                        effect.message,
+                        Snackbar.LENGTH_INDEFINITE,
+                    )
+                    snack.setAction("Ok") {
+                        snack.dismiss()
+                    }.show()
+                }
+                is WeatherFragmentContract.Effect.HideSearchView -> {
+                    binding.weatherFragmentSearchViewContainer.visibility = View.GONE
                 }
             }
         }
@@ -85,11 +108,13 @@ class WeatherFragment : Fragment(), PlaceListAdapter.PlaceItemClickListener {
         binding.weatherFragmentTvMessage.text = message
     }
 
-    private fun showSearchView(isSearchVisible: Boolean) {
-        if (isSearchVisible) {
-            binding.weatherFragmentSearchViewContainer.visibility = View.VISIBLE
+    private fun populatePlacesList(placesList: List<Place>) {
+        if (placesList.isEmpty()) {
+            binding.weatherFragmentTvSearchInfo.visibility = View.VISIBLE
+            binding.weatherFragmentTvSearchInfo.text = resources.getString(R.string.searchTextNotFound)
         } else {
-            binding.weatherFragmentSearchViewContainer.visibility = View.GONE
+            placeListAdapter.submitList(placesList)
+            binding.weatherFragmentTvSearchInfo.visibility = View.GONE
         }
     }
 
@@ -99,7 +124,6 @@ class WeatherFragment : Fragment(), PlaceListAdapter.PlaceItemClickListener {
                 locationName = placeName,
             ),
         )
-        binding.weatherFragmentSearchViewContainer.visibility = View.GONE
     }
 
     private fun getSearchText() {
@@ -128,8 +152,8 @@ class WeatherFragment : Fragment(), PlaceListAdapter.PlaceItemClickListener {
         binding.weatherFragmentPbLoadingData.visibility = View.GONE
 
         binding.apply {
-            weatherFragmentTvTime.text = getTime()
-            weatherFragmentTvDateToday.text = getDate()
+            weatherFragmentTvTime.text = getCurrentFormattedTime()
+            weatherFragmentTvDateToday.text = getCurrentFormattedDate()
             weatherFragmentTvPlaceName.text = data.placeName
             weatherFragmentIvWeatherIcon.load(data.dayTypeIcon)
             weatherFragmentTvTempValue.text = data.dayTemperature
@@ -161,21 +185,5 @@ class WeatherFragment : Fragment(), PlaceListAdapter.PlaceItemClickListener {
             weatherFragmentTvForecastTomorrowName.visibility = View.VISIBLE
             weatherFragmentTvForecastThirdName.visibility = View.VISIBLE
         }
-    }
-
-    private fun getTime(): String {
-        return "${localDateTime.toLocalTime().hour}:${localDateTime.toLocalTime().minute} ${localDateTime.toLocalTime().format(
-            DateTimeFormatter.ofPattern("a"),
-        )}"
-    }
-
-    private fun getDate(): String {
-        val dayOfWeek = localDateTime.dayOfWeek.toString().lowercase(Locale.ROOT)
-            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
-        val dayOfMonth = localDateTime.dayOfMonth
-        val month = localDateTime.month.toString().lowercase(Locale.ROOT)
-            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-        val year = localDateTime.year
-        return "$dayOfWeek, $dayOfMonth $month $year"
     }
 }

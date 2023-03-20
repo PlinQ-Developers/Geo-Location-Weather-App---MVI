@@ -23,21 +23,25 @@ class WeatherFragmentViewModel @Inject constructor(
     private val _weatherFragmentState = MutableLiveData<WeatherFragmentContract.State>()
     val state: LiveData<WeatherFragmentContract.State> = _weatherFragmentState
 
+    private val _weatherFragmentEffect = MutableLiveData<WeatherFragmentContract.Effect>()
+    val effects: LiveData<WeatherFragmentContract.Effect> = _weatherFragmentEffect
+
     fun handleEvents(
         event: WeatherFragmentContract.Event,
     ) {
         when (event) {
             is WeatherFragmentContract.Event.GetWeatherForecast -> {
+                _weatherFragmentEffect.value = WeatherFragmentContract.Effect.HideSearchView
                 getWeatherForecast(placeName = event.locationName)
-            }
-            is WeatherFragmentContract.Event.ShowSearchView -> {
-                _weatherFragmentState.value = WeatherFragmentContract.State(isSearchViewVisible = true)
-            }
-            is WeatherFragmentContract.Event.CloseSearchView -> {
-                _weatherFragmentState.value = WeatherFragmentContract.State(isSearchViewVisible = false)
             }
             is WeatherFragmentContract.Event.SearchPlaceQuery -> {
                 searchPlaces(placeName = event.searchText)
+            }
+            is WeatherFragmentContract.Event.OpenSearchContainer -> {
+                _weatherFragmentEffect.value = WeatherFragmentContract.Effect.ShowSearchView
+            }
+            is WeatherFragmentContract.Event.CloseSearchContainer -> {
+                _weatherFragmentEffect.value = WeatherFragmentContract.Effect.HideSearchView
             }
         }
     }
@@ -47,7 +51,6 @@ class WeatherFragmentViewModel @Inject constructor(
             getWeatherForecast(
                 placeName = Constants.DEFAULT_CITY,
             )
-            searchPlaces(placeName = "L")
         }
     }
 

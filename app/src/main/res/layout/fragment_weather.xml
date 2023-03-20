@@ -320,20 +320,42 @@
         android:id="@+id/weatherFragment_searchViewContainer"
         android:padding="20dp">
 
-        <androidx.appcompat.widget.SearchView
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="54dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="55dp"
-            app:defaultQueryHint="Search city"
-            app:queryHint="Search city"
-            android:background="@drawable/bg_search_box"
-            android:id="@+id/weatherFragment_sv_searchText" />
+            android:id="@+id/weatherFragment_cl_searchWindowComponents">
+
+            <ImageView
+                android:id="@+id/weatherFragment_btn_closeSearchWindow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_arrow"
+                android:padding="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/weatherFragment_sv_searchText"
+                android:layout_width="0dp"
+                android:layout_height="54dp"
+                android:layout_marginStart="20dp"
+                android:background="@drawable/bg_search_box"
+                app:defaultQueryHint="Search city"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/weatherFragment_btn_closeSearchWindow"
+                app:layout_constraintTop_toTopOf="parent"
+                app:queryHint="Search city" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/weatherFragment_tv_searchInfo"
-            android:layout_below="@+id/weatherFragment_sv_searchText"
+            android:layout_below="@+id/weatherFragment_cl_searchWindowComponents"
             android:layout_marginTop="20dp"
             android:visibility="gone"
             android:gravity="center" />
@@ -341,7 +363,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/weatherFragment_sv_searchText"
+            android:layout_below="@+id/weatherFragment_cl_searchWindowComponents"
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:id="@+id/searchViewContainer_suggestionsList" />
