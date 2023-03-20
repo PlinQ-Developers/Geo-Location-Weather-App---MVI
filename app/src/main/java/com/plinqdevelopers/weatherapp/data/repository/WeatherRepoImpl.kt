@@ -9,7 +9,15 @@ class WeatherRepoImpl @Inject constructor(
     private val api: WeatherApi,
 ) : WeatherRepo {
 
-    override suspend fun getWeatherForecast(): WeatherDto {
-        return api.getWeatherForecast()
+    override suspend fun getWeatherForecast(
+        key: String,
+        city: String,
+        days: Int,
+    ): WeatherDto {
+        return api.getWeatherForecast(
+            apiKey = key,
+            cityName = city,
+            forecastDays = days,
+        )
     }
 }

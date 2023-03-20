@@ -1,5 +1,6 @@
 package com.plinqdevelopers.weatherapp.domain.use_cases // ktlint-disable package-name
 
+import com.plinqdevelopers.weatherapp.core.Constants
 import com.plinqdevelopers.weatherapp.core.Resource
 import com.plinqdevelopers.weatherapp.data.source.remote.dto.weather.toWeather
 import com.plinqdevelopers.weatherapp.domain.model.Weather
@@ -13,12 +14,18 @@ import javax.inject.Inject
 class GetWeatherUseCase @Inject constructor(
     private val repository: WeatherRepo,
 ) {
-    operator fun invoke(): Flow<Resource<Weather>> = flow {
+    operator fun invoke(
+        placeName: String,
+    ): Flow<Resource<Weather>> = flow {
         try {
             emit(
                 Resource.Loading(),
             )
-            val weatherDto = repository.getWeatherForecast()
+            val weatherDto = repository.getWeatherForecast(
+                key = Constants.API_KEY,
+                city = placeName,
+                days = Constants.DEFAULT_FORECAST_DAYS,
+            )
             emit(
                 Resource.Success(
                     data = weatherDto.toWeather(),

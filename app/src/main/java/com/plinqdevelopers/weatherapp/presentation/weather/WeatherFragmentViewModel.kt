@@ -4,11 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.plinqdevelopers.weatherapp.core.Constants
 import com.plinqdevelopers.weatherapp.core.Resource
 import com.plinqdevelopers.weatherapp.domain.use_cases.GetWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +26,7 @@ class WeatherFragmentViewModel @Inject constructor(
     ) {
         when (event) {
             is WeatherFragmentContract.Event.GetWeatherForecast -> {
-                getWeatherForecast()
+                getWeatherForecast(placeName = "Tokyo")
             }
             is WeatherFragmentContract.Event.ShowSearchView -> {
                 _weatherFragmentState.value = WeatherFragmentContract.State(isSearchViewVisible = true)
@@ -35,8 +37,16 @@ class WeatherFragmentViewModel @Inject constructor(
         }
     }
 
-    private fun getWeatherForecast() {
-        getWeatherUseCase().onEach { result ->
+    init {
+        viewModelScope.launch {
+            getWeatherForecast(
+                placeName = Constants.DEFAULT_CITY,
+            )
+        }
+    }
+
+    private fun getWeatherForecast(placeName: String) {
+        getWeatherUseCase(placeName).onEach { result ->
             when (result) {
                 is Resource.Loading -> {
                     _weatherFragmentState.value = WeatherFragmentContract.State(isLoading = true)

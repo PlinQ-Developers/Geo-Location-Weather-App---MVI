@@ -9,6 +9,7 @@ sealed class WeatherFragmentContract {
         val data: Weather? = null,
         val errorMessage: String? = null,
         val isSearchViewVisible: Boolean = false,
+        val selectedCity: String = "",
     )
 
     // Effects: represents a side effect the fragment can perform
