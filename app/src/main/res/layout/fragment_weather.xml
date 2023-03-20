@@ -62,7 +62,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:fontFamily="@font/bold_font"
+            android:fontFamily="@font/medium_font"
             android:maxLines="2"
             android:textColor="@color/white"
             android:textSize="32sp"
@@ -82,8 +82,8 @@
 
         <ImageView
             android:id="@+id/weatherFragment_iv_weatherIcon"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_below="@+id/weatherFragment_tv_dateToday"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="112dp"
@@ -98,7 +98,7 @@
             android:layout_marginTop="34dp"
             android:fontFamily="@font/black_font"
             android:textColor="@color/white"
-            android:textSize="56sp"
+            android:textSize="60sp"
             android:textStyle="bold" />
 
         <TextView
@@ -316,54 +316,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:layout_marginTop="44dp"
         android:background="@drawable/bg_search_container"
         android:id="@+id/weatherFragment_searchViewContainer"
         android:padding="20dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.appcompat.widget.SearchView
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="55dp"
+            app:defaultQueryHint="Search city"
+            app:queryHint="Search city"
+            android:background="@drawable/bg_search_box"
+            android:id="@+id/weatherFragment_sv_searchText" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/searchViewContainer_search">
-
-            <ImageView
-                android:id="@+id/weatherFragment_iv_closeSearch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="4dp"
-                android:src="@drawable/ic_arrow"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/ThemeOverlay.Material3.TextInputEditText.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:hintEnabled="false"
-                android:layout_marginStart="14dp"
-                android:background="@drawable/bg_search_box"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/weatherFragment_iv_closeSearch"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Search city"
-                    android:background="@drawable/bg_search_box"
-                    android:fontFamily="@font/regular_font"/>
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:id="@+id/weatherFragment_tv_searchInfo"
+            android:layout_below="@+id/weatherFragment_sv_searchText"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
+            android:gravity="center" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/searchViewContainer_search"
-            android:layout_marginTop="8dp"
+            android:layout_below="@+id/weatherFragment_sv_searchText"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:id="@+id/searchViewContainer_suggestionsList" />
 
     </RelativeLayout>

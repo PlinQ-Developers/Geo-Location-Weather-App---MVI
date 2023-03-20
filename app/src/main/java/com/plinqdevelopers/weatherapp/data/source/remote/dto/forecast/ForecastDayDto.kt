@@ -3,7 +3,7 @@ package com.plinqdevelopers.weatherapp.data.source.remote.dto.forecast
 import com.google.gson.annotations.SerializedName
 
 data class ForecastDayDto(
-    val avghumidity: Int,
+    val avghumidity: Double,
     @SerializedName("avgtemp_c")
     val avgTempC: Double,
     @SerializedName("avgtemp_f")
@@ -11,16 +11,16 @@ data class ForecastDayDto(
     @SerializedName("avgvis_km")
     val avgVisKm: Double,
     @SerializedName("avgvis_miles")
-    val avgVisMiles: Int,
+    val avgVisMiles: Double,
     val condition: ForecastDayConditionDto,
     @SerializedName("daily_chance_of_rain")
-    val dailyChanceOfRain: Int,
+    val dailyChanceOfRain: Double,
     @SerializedName("daily_chance_of_snow")
-    val dailyChanceOfSnow: Int,
+    val dailyChanceOfSnow: Double,
     @SerializedName("daily_will_it_rain")
-    val dailyWillItRain: Int,
+    val dailyWillItRain: Double,
     @SerializedName("daily_will_it_snow")
-    val dailyWillItSnow: Int,
+    val dailyWillItSnow: Double,
     @SerializedName("maxtemp_c")
     val maxTempC: Double,
     @SerializedName("maxtemp_f")
@@ -38,6 +38,6 @@ data class ForecastDayDto(
     @SerializedName("totalprecip_mm")
     val totalPrecipMm: Double,
     @SerializedName("totalsnow_cm")
-    val totalSnowCm: Int,
-    val uv: Int,
+    val totalSnowCm: Double,
+    val uv: Double,
 )

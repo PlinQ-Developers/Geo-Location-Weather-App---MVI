@@ -4,21 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.plinqdevelopers.weatherapp.databinding.FragmentWeatherBinding
 import com.plinqdevelopers.weatherapp.domain.model.Weather
+import com.plinqdevelopers.weatherapp.presentation.adapters.PlaceListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 @AndroidEntryPoint
-class WeatherFragment : Fragment() {
+class WeatherFragment : Fragment(), PlaceListAdapter.PlaceItemClickListener {
     private lateinit var binding: FragmentWeatherBinding
     private val viewModel: WeatherFragmentViewModel by viewModels()
     private val localDateTime = LocalDateTime.now()
+
+    private val placeListAdapter: PlaceListAdapter = PlaceListAdapter(this)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,32 +32,24 @@ class WeatherFragment : Fragment() {
     ): View {
         binding = FragmentWeatherBinding.inflate(inflater, container, false)
         observeState()
+        binding.searchViewContainerSuggestionsList.apply {
+            adapter = placeListAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            hasFixedSize()
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViews()
+        getSearchText()
     }
 
     private fun setupViews() {
-        binding.weatherFragmentToolbarContainer.setOnClickListener {
-            viewModel.handleEvents(
-                WeatherFragmentContract.Event.GetWeatherForecast(
-                    locationName = "",
-                ),
-            )
-        }
-
-        binding.weatherFragmentIvWeatherIcon.setOnClickListener {
+        binding.weatherFragmentSearchButton.setOnClickListener {
             viewModel.handleEvents(
                 WeatherFragmentContract.Event.ShowSearchView,
-            )
-        }
-
-        binding.weatherFragmentIvCloseSearch.setOnClickListener {
-            viewModel.handleEvents(
-                WeatherFragmentContract.Event.CloseSearchView,
             )
         }
     }
@@ -64,6 +61,17 @@ class WeatherFragment : Fragment() {
                 state.errorMessage != null -> showError(state.errorMessage)
                 state.isSearchViewVisible -> showSearchView(state.isSearchViewVisible)
                 state.data != null -> showWeatherData(state.data)
+                state.placesList != null -> {
+                    val placeListData = state.placesList
+
+                    if (placeListData.isEmpty()) {
+                        binding.weatherFragmentTvSearchInfo.visibility = View.VISIBLE
+                        binding.weatherFragmentTvSearchInfo.text = "We could not find any matches to your search!"
+                    } else {
+                        placeListAdapter.submitList(state.placesList)
+                        binding.weatherFragmentTvSearchInfo.visibility = View.GONE
+                    }
+                }
             }
         }
     }
@@ -83,6 +91,37 @@ class WeatherFragment : Fragment() {
         } else {
             binding.weatherFragmentSearchViewContainer.visibility = View.GONE
         }
+    }
+
+    override fun onPlaceItemClicked(placeName: String) {
+        viewModel.handleEvents(
+            event = WeatherFragmentContract.Event.GetWeatherForecast(
+                locationName = placeName,
+            ),
+        )
+        binding.weatherFragmentSearchViewContainer.visibility = View.GONE
+    }
+
+    private fun getSearchText() {
+        binding.weatherFragmentSvSearchText.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                queryCityOnInput(searchText = query.toString())
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                queryCityOnInput(searchText = newText.toString())
+                return true
+            }
+        })
+    }
+
+    private fun queryCityOnInput(searchText: String) {
+        viewModel.handleEvents(
+            event = WeatherFragmentContract.Event.SearchPlaceQuery(
+                searchText = searchText,
+            ),
+        )
     }
 
     private fun showWeatherData(data: Weather) {

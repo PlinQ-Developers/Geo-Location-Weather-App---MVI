@@ -28,13 +28,16 @@ class WeatherFragmentViewModel @Inject constructor(
     ) {
         when (event) {
             is WeatherFragmentContract.Event.GetWeatherForecast -> {
-                getWeatherForecast(placeName = "Tokyo")
+                getWeatherForecast(placeName = event.locationName)
             }
             is WeatherFragmentContract.Event.ShowSearchView -> {
                 _weatherFragmentState.value = WeatherFragmentContract.State(isSearchViewVisible = true)
             }
             is WeatherFragmentContract.Event.CloseSearchView -> {
                 _weatherFragmentState.value = WeatherFragmentContract.State(isSearchViewVisible = false)
+            }
+            is WeatherFragmentContract.Event.SearchPlaceQuery -> {
+                searchPlaces(placeName = event.searchText)
             }
         }
     }
@@ -75,7 +78,7 @@ class WeatherFragmentViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     val data = placeResult.data
-                    _weatherFragmentState.value = WeatherFragmentContract.State(placesList = data ?: emptyList())
+                    _weatherFragmentState.value = WeatherFragmentContract.State(placesList = data)
                 }
                 is Resource.Error -> {
                     _weatherFragmentState.value = WeatherFragmentContract.State(

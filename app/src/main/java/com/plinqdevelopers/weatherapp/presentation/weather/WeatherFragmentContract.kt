@@ -11,7 +11,7 @@ sealed class WeatherFragmentContract {
         val errorMessage: String? = null,
         val isSearchViewVisible: Boolean = false,
         val selectedCity: String = "",
-        val placesList: List<Place> = emptyList(),
+        val placesList: List<Place>? = null,
     )
 
     // Effects: represents a side effect the fragment can perform
@@ -25,6 +25,7 @@ sealed class WeatherFragmentContract {
     // Events: represents all actions a user can do within the screen
     sealed class Event {
         data class GetWeatherForecast(val locationName: String) : Event()
+        data class SearchPlaceQuery(val searchText: String) : Event()
         object ShowSearchView : Event()
         object CloseSearchView : Event()
     }
