@@ -1,5 +1,6 @@
 package com.plinqdevelopers.weatherapp.presentation.weather
 
+import com.plinqdevelopers.weatherapp.domain.model.Place
 import com.plinqdevelopers.weatherapp.domain.model.Weather
 
 sealed class WeatherFragmentContract {
@@ -10,6 +11,7 @@ sealed class WeatherFragmentContract {
         val errorMessage: String? = null,
         val isSearchViewVisible: Boolean = false,
         val selectedCity: String = "",
+        val placesList: List<Place> = emptyList(),
     )
 
     // Effects: represents a side effect the fragment can perform

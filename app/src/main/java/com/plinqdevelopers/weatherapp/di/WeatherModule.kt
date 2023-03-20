@@ -1,7 +1,9 @@
 package com.plinqdevelopers.weatherapp.di
 
+import com.plinqdevelopers.weatherapp.data.repository.PlacesRepoImpl
 import com.plinqdevelopers.weatherapp.data.repository.WeatherRepoImpl
 import com.plinqdevelopers.weatherapp.data.source.remote.WeatherApi
+import com.plinqdevelopers.weatherapp.domain.repository.PlacesRepo
 import com.plinqdevelopers.weatherapp.domain.repository.WeatherRepo
 import dagger.Module
 import dagger.Provides
@@ -42,6 +44,16 @@ object WeatherModule {
         api: WeatherApi,
     ): WeatherRepo {
         return WeatherRepoImpl(
+            api = api,
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providePlacesRepo(
+        api: WeatherApi,
+    ): PlacesRepo {
+        return PlacesRepoImpl(
             api = api,
         )
     }

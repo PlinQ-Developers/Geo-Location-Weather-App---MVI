@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.plinqdevelopers.weatherapp.core.Constants
 import com.plinqdevelopers.weatherapp.core.Resource
+import com.plinqdevelopers.weatherapp.domain.use_cases.GetPlacesUseCase
 import com.plinqdevelopers.weatherapp.domain.use_cases.GetWeatherUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -16,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WeatherFragmentViewModel @Inject constructor(
     private val getWeatherUseCase: GetWeatherUseCase,
+    private val getPlacesUseCase: GetPlacesUseCase,
 ) : ViewModel() {
 
     private val _weatherFragmentState = MutableLiveData<WeatherFragmentContract.State>()
@@ -42,6 +44,7 @@ class WeatherFragmentViewModel @Inject constructor(
             getWeatherForecast(
                 placeName = Constants.DEFAULT_CITY,
             )
+            searchPlaces(placeName = "L")
         }
     }
 
@@ -58,6 +61,25 @@ class WeatherFragmentViewModel @Inject constructor(
                 is Resource.Error -> {
                     _weatherFragmentState.value = WeatherFragmentContract.State(
                         errorMessage = result.message ?: "An unexpected error occurred!",
+                    )
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun searchPlaces(placeName: String) {
+        getPlacesUseCase(placeName).onEach { placeResult ->
+            when (placeResult) {
+                is Resource.Loading -> {
+                    _weatherFragmentState.value = WeatherFragmentContract.State(isLoading = true)
+                }
+                is Resource.Success -> {
+                    val data = placeResult.data
+                    _weatherFragmentState.value = WeatherFragmentContract.State(placesList = data ?: emptyList())
+                }
+                is Resource.Error -> {
+                    _weatherFragmentState.value = WeatherFragmentContract.State(
+                        errorMessage = placeResult.message ?: "An unexpected error occurred!",
                     )
                 }
             }

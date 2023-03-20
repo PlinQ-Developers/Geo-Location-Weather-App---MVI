@@ -74,6 +74,7 @@ class WeatherFragment : Fragment() {
 
     private fun showError(message: String) {
         binding.weatherFragmentPbLoadingData.visibility = View.GONE
+        binding.weatherFragmentTvMessage.text = message
     }
 
     private fun showSearchView(isSearchVisible: Boolean) {
@@ -105,6 +106,21 @@ class WeatherFragment : Fragment() {
 
             weatherFragmentTvForecastThirdValue.text = data.forecastDay3Temp
             weatherFragmentIvForecastThird.load(data.forecastDay3Icon)
+
+            showIconsAndTextAfterLoadingComplete()
+        }
+    }
+
+    private fun showIconsAndTextAfterLoadingComplete() {
+        binding.apply {
+            weatherFragmentTvMessage.visibility = View.GONE
+            weatherFragmentSearchButton.visibility = View.VISIBLE
+            weatherFragmentIvWindIcon.visibility = View.VISIBLE
+            weatherFragmentIvHumidityIcon.visibility = View.VISIBLE
+
+            weatherFragmentTvForecastTodayName.visibility = View.VISIBLE
+            weatherFragmentTvForecastTomorrowName.visibility = View.VISIBLE
+            weatherFragmentTvForecastThirdName.visibility = View.VISIBLE
         }
     }
 
